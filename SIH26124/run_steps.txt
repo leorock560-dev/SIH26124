@@ -1,0 +1,184 @@
+URBANEYE - STEP-BY-STEP RUN GUIDE (WINDOWS POWERSHELL)
+======================================================
+
+This guide starts from the workspace folder C:\sih2026. Use Python 3.10 or
+newer. Keep the server terminal open while using the website or edge demo.
+
+PART A - START THE WEB APP AND API
+----------------------------------
+
+1. Open a PowerShell terminal and move to the workspace:
+
+   cd C:\sih2026
+
+2. Enter the SIH26124 project folder:
+
+   cd .\SIH26124
+
+3. Confirm that the Python launcher sees Python 3.10 or newer:
+
+   py -3 --version
+
+   If this command is missing, install Python 3.10+ and enable the Windows
+   Python launcher, or use your Python executable instead of "py -3" below.
+
+4. Create the project's virtual environment if it does not already exist:
+
+   if (-not (Test-Path .venv)) { py -3 -m venv .venv }
+
+5. Activate the environment:
+
+   .\.venv\Scripts\Activate.ps1
+
+   If PowerShell says scripts are disabled, allow activation only in this
+   terminal session, then activate again:
+
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\.venv\Scripts\Activate.ps1
+
+6. Install server and test dependencies:
+
+   python -m pip install --upgrade pip
+   python -m pip install -r requirements-test.txt
+
+7. Set local-only session and edge keys for this terminal:
+
+   $env:URBANEYE_SESSION_SECRET = [guid]::NewGuid().ToString('N')
+   $env:URBANEYE_API_KEY = 'demo-key-change-me'
+
+   Keep this terminal open. These environment values are needed by the
+   server and are not permanent Windows settings.
+
+8. Create/update the local SQLite database and load sample fleet/events:
+
+   python seed.py
+
+   This refreshes sample bus timestamps and idempotently adds synthetic
+   GPS-tagged bus/event samples around reference cities in all 36 States/UTs.
+   The records are illustrative, not actual fleet or road-incident reports.
+
+9. Start the web application and API:
+
+   python -m uvicorn app:app --reload --host 127.0.0.1 --port 8000
+
+   Leave this server running. The --reload option is intended for local
+   development, not production deployment.
+
+10. Open the portal in a browser:
+
+   http://127.0.0.1:8000
+
+11. Select Officer sign up, create an officer account, then sign in. If
+    URBANEYE_REGISTRATION_CODE has been configured, enter that code during
+    signup. The dashboard is at:
+
+   http://127.0.0.1:8000/dashboard.html
+
+12. Optional API documentation and health check:
+
+   http://127.0.0.1:8000/docs
+   http://127.0.0.1:8000/api/health
+
+PART B - RUN THE LIGHTWEIGHT EDGE SIMULATOR
+-------------------------------------------
+
+Keep Part A running. Open a SECOND PowerShell terminal.
+
+1. Enter the workspace and project folder:
+
+   cd C:\sih2026
+   cd .\SIH26124
+
+2. Activate the same virtual environment:
+
+   .\.venv\Scripts\Activate.ps1
+
+   If PowerShell blocks activation, run this in the second terminal first:
+
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\.venv\Scripts\Activate.ps1
+
+3. Install the lightweight mock-camera requirements (no YOLO/OCR model is
+   downloaded by this command):
+
+   python -m pip install -r requirements-edge-mock.txt
+
+4. Configure the simulator to send to the local API. The API key must match
+   the value used in Part A:
+
+   $env:URBANEYE_MOCK_MODE = 'true'
+   $env:URBANEYE_CLOUD_URL = 'http://127.0.0.1:8000/api'
+   $env:URBANEYE_API_KEY = 'demo-key-change-me'
+
+5. Run a short synthetic edge session:
+
+   python main.py --camera front --no-display --max-frames 240
+
+   The simulator prints EVENT lines as synthetic detections are sent. Refresh
+   the dashboard to see new events and bus heartbeats. Mock detections are
+   synthetic and do not demonstrate model accuracy.
+
+6. To run continuously, omit --max-frames:
+
+   python main.py --camera front --no-display
+
+PART C - OPTIONAL REAL CAMERA/MODEL
+-----------------------------------
+
+Real inference needs camera hardware or a video/RTSP source, trained model
+weights, optional serial GPS hardware, and validation/calibration. No trained
+road-hazard weights are included.
+
+1. In the second terminal, install the larger edge stack:
+
+   python -m pip install -r requirements-edge.txt
+
+2. Set the camera source, model weights and mode. Example values only; change
+   them for your equipment and model file:
+
+   $env:URBANEYE_CAM_FRONT = '0'
+   $env:URBANEYE_MODEL_WEIGHTS = 'models\urbaneye_yolov8.pt'
+   $env:URBANEYE_MOCK_MODE = 'false'
+   $env:URBANEYE_CLOUD_URL = 'http://127.0.0.1:8000/api'
+   $env:URBANEYE_API_KEY = 'demo-key-change-me'
+
+3. For serial GPS, configure the actual Windows port, for example:
+
+   $env:URBANEYE_GPS_SOURCE = 'serial'
+   $env:URBANEYE_GPS_PORT = 'COM3'
+
+4. Run one configured camera:
+
+   python main.py --camera front --no-display
+
+   Supported camera names are front, rear, side, cabin and all. For --camera
+   all, configure the extra camera variables first, such as
+   URBANEYE_CAM_REAR, URBANEYE_CAM_SIDE and URBANEYE_CAM_CABIN. Do not use
+   mock mode when evaluating real model performance.
+
+PART D - TESTS AND TROUBLESHOOTING
+----------------------------------
+
+Run the API integration test from the project folder:
+
+   cd C:\sih2026\SIH26124
+   .\.venv\Scripts\Activate.ps1
+   python -m unittest test_api -v
+
+Common startup issues:
+- "Set URBANEYE_SESSION_SECRET": set the session secret in the SAME terminal
+  before starting Uvicorn (see Part A, step 7).
+- Edge events return 503/401: make sure URBANEYE_API_KEY is set in both
+  terminals and the values match.
+- Address/port is in use: stop the previous server or use another port and
+  open the matching URL.
+- Missing Python packages: activate .venv, then repeat the requirements
+  install command for the server or edge mode you are running.
+- Map tiles do not appear: check internet access. Map tiles use public
+  OpenStreetMap and Esri tile endpoints and do not require API keys.
+- For database reset/reseed during development, back up urbaneye.db first.
+  seed.py is designed to refresh sample bus positions and add sample events
+  without duplicating the existing sample event set.
+
+Never use the sample API key or a development session secret in a public
+or production deployment.

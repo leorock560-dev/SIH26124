@@ -1,0 +1,25 @@
+.auth-modal{z-index:2000}
+.password-field{position:relative;display:block;width:100%}
+.password-field input{width:100%;padding-right:44px}
+.password-toggle{
+  position:absolute;
+  top:50%;
+  right:8px;
+  display:grid;
+  width:32px;
+  height:32px;
+  place-items:center;
+  padding:0;
+  transform:translateY(-50%);
+  border:0;
+  border-radius:4px;
+  background:transparent;
+  color:#5d6b79;
+  cursor:pointer;
+}
+.password-toggle:hover{background:#eaf1f8;color:#073b78}
+.password-toggle:focus-visible{outline:2px solid #0d67b5;outline-offset:1px}
+.password-toggle svg{width:19px;height:19px}
+.password-toggle .eye-closed{display:none}
+.password-toggle[aria-pressed="true"] .eye-open{display:none}
+.password-toggle[aria-pressed="true"] .eye-closed{display:block}

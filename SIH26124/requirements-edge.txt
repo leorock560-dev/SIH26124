@@ -1,0 +1,7 @@
+-r requirements.txt
+ultralytics>=8.2.0
+opencv-python>=4.9.0
+easyocr>=1.7.1
+numpy>=1.26.0
+pyserial>=3.5
+pynmea2>=1.19

@@ -1,0 +1,32 @@
+.map-type-control{
+  display:flex;
+  gap:2px;
+  padding:4px;
+  border:1px solid #D9E2EC;
+  border-radius:6px;
+  background:rgba(255,255,255,.97);
+  box-shadow:0 2px 10px rgba(23,37,53,.16);
+}
+.map-type-control button{
+  border:0;
+  border-radius:3px;
+  padding:7px 9px;
+  background:transparent;
+  color:#405367;
+  font:600 11px/1.1 Inter, sans-serif;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.map-type-control button:hover{background:#F2F7FC}
+.map-type-control button[aria-pressed="true"]{background:#E87817;color:#FFFFFF}
+.map-type-control button:focus-visible{outline:2px solid #0D67B5;outline-offset:1px}
+#landingMap.leaflet-container{
+  isolation:isolate;
+  position:relative;
+  z-index:0;
+  background:#dce6e3;
+}
+@media (max-width:420px){
+  .map-type-control{gap:1px;padding:3px}
+  .map-type-control button{padding:6px 7px;font-size:10px}
+}

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>URBANEYE | Urban Intelligence Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="portal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <link rel="stylesheet" href="css/map-controls.css?v=3">
+    <link rel="stylesheet" href="css/branding.css?v=1">
+    <link rel="stylesheet" href="css/auth-accessibility.css?v=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://tile.openstreetmap.org https://server.arcgisonline.com; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 ws://127.0.0.1:8000 ws://localhost:8000 https://tile.openstreetmap.org https://server.arcgisonline.com https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  </head>
+  <body>
+    <div class="gov-strip">
+      <div class="shell">
+        <span>SIH 26124 · Bharat Electronics Limited concept prototype</span>
+        <span>Illustrative demonstration · not an official government portal</span>
+      </div>
+    </div>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="identity" href="#top">
+          <img class="brand-logo landing-brand-logo" src="/assets/urbaneye.png" alt="URBANEYE">
+          <span>
+            <b>URBANEYE</b>
+            <small>Mobile Urban Intelligence Platform</small>
+          </span>
+        </a>
+        <nav>
+          <a href="#about">About</a>
+          <a href="#capabilities">Solutions</a>
+          <a href="#how">How it works</a>
+          <button class="outline-btn" data-open-auth="login">Officer login</button>
+          <button class="primary-btn" data-open-auth="signup">Officer sign up</button>
+        </nav>
+      </div>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <span class="eyebrow">Bharat Electronics Limited · Problem Statement 26124</span>
+            <h1>Making every public bus a sensor for safer Indian roads.</h1>
+            <p>URBANEYE uses edge AI on public-transport fleets to spot road defects, congestion and safety incidents—then turns them into actionable intelligence for authorities.</p>
+            <div class="hero-actions">
+              <button class="primary-btn large" data-open-auth="signup">Request officer access</button>
+              <a class="text-link" href="#how">Explore the platform →</a>
+            </div>
+          </div>
+          <div class="command-card">
+            <div class="card-top">
+              <span class="live-dot"></span>ILLUSTRATIVE FLEET SNAPSHOT
+              <span id="sampleClock">Sample data</span>
+            </div>
+            <div class="map-art" id="landingMap" role="img" aria-label="Sample Bengaluru bus and road event map"></div>
+            <div class="signal-row">
+              <div>
+                <b>8</b>
+                <span>Sample buses</span>
+              </div>
+              <div>
+                <b>10</b>
+                <span>Sample events</span>
+              </div>
+              <div>
+                <b>86%</b>
+                <span>Sample confidence</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="impact">
+        <div class="shell">
+          <div class="section-title">
+            <span>OUR PURPOSE</span>
+            <h2>Road intelligence that reaches every ward.</h2>
+          </div>
+          <div class="impact-grid">
+            <article>
+              <b>Route coverage</b>
+              <p>Repeated observations along scheduled public-bus routes</p>
+            </article>
+            <article>
+              <b>Edge AI</b>
+              <p>Detection and event rules run near the bus cameras</p>
+            </article>
+            <article>
+              <b>Event-only</b>
+              <p>Compact alerts are sent instead of continuous video</p>
+            </article>
+            <article>
+              <b>4 feeds</b>
+              <p>Front, rear, side and cabin camera coverage per bus</p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="capabilities" class="section pale">
+        <div class="shell">
+          <div class="section-title centered">
+            <span>PLATFORM SERVICES</span>
+            <h2>One integrated view for city authorities</h2>
+          </div>
+          <div class="service-grid">
+            <article>
+              <i>⌁</i>
+              <h3>Road health</h3>
+              <p>Detect potholes, damaged surfaces, missing dividers, faded crossings and waterlogging.</p>
+            </article>
+            <article>
+              <i>◫</i>
+              <h3>Traffic intelligence</h3>
+              <p>Measure vehicle density, identify bottlenecks and estimate route delays in real time.</p>
+            </article>
+            <article>
+              <i>⚠</i>
+              <h3>Public safety</h3>
+              <p>Flag vulnerable pedestrian situations, rash driving and incident patterns for review.</p>
+            </article>
+            <article>
+              <i>⌖</i>
+              <h3>Evidence centre</h3>
+              <p>Securely package registration plates, confidence, timestamp and location for response teams.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="how" class="section">
+        <div class="shell process">
+          <div class="section-title">
+            <span>HOW URBANEYE WORKS</span>
+            <h2>From bus camera to field action.</h2>
+            <p>Designed for high-value insights while keeping raw video at the edge.</p>
+          </div>
+          <ol>
+            <li>
+              <b>01</b>
+              <h3>Capture</h3>
+              <p>Bus-mounted cameras observe normal journeys.</p>
+            </li>
+            <li>
+              <b>02</b>
+              <h3>Analyse</h3>
+              <p>Onboard AI identifies meaningful events locally.</p>
+            </li>
+            <li>
+              <b>03</b>
+              <h3>Transmit</h3>
+              <p>Only secure, compact alert packets reach the centre.</p>
+            </li>
+            <li>
+              <b>04</b>
+              <h3>Respond</h3>
+              <p>Officials prioritize and assign action by jurisdiction.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+      <section id="about" class="access-band">
+        <div class="shell">
+          <div>
+            <span class="eyebrow">SECURE OFFICER PORTAL</span>
+            <h2>View your region. Act with confidence.</h2>
+            <p>Explore a sample State, District, Sub-district and Taluk hierarchy. Event-to-boundary matching is a future integration.</p>
+          </div>
+          <button class="white-btn" data-open-auth="login">Access dashboard →</button>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="shell footer-grid">
+        <div>
+          <b>URBANEYE</b>
+          <p>AI-Powered Mobile Urban Intelligence Platform Using Public Transport Fleet</p>
+        </div>
+        <div>
+          <b>Problem Statement</b>
+          <p>ID 26124 · Bharat Electronics Limited<br>Software · Smart Automation</p>
+          </div>
+          <div>
+            <b>Prototype notes</b>
+            <p>Illustrative sample data · not an official service</p>
+          </div>
+        </div>
+        <div class="footer-bottom shell">© 2026 SIH 26124 concept prototype · Built for Indian urban mobility
+        </div>
+      </footer>
+      <div class="auth-modal" id="authModal" aria-hidden="true">
+        <div class="auth-box">
+          <button class="close" aria-label="Close">×</button>
+          <div class="auth-mark">URBANEYE
+            <span>OFFICER PORTAL</span>
+          </div>
+          <div id="authMessage" class="form-message">
+          </div>
+          <div id="loginForm">
+            <h2>Officer login</h2>
+            <p>Use your registered official email to access the dashboard.</p>
+            <form id="login" method="post" action="/api/login" autocomplete="on">
+              <label>Official email<input type="email" name="email" required placeholder="name@department.gov.in">
+              </label>
+              <label>Password<span class="password-field"><input id="loginPassword" type="password" name="password" autocomplete="current-password" required placeholder="Enter password"><button class="password-toggle" type="button" data-password-toggle="loginPassword" aria-label="Show password" aria-pressed="false" title="Show password"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3 21 21M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A11.1 11.1 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.8M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7c1.3 0 2.5-.3 3.5-.8"/></svg></button></span>
+              </label>
+              <button class="primary-btn form-btn">Sign in securely</button>
+            </form>
+            <p class="switch-copy">New officer?
+              <button data-switch="signup">Create a demo account</button>
+            </p>
+          </div>
+          <div id="signupForm" hidden>
+            <h2>Officer registration</h2>
+            <p>Register for this frontend demonstration portal.</p>
+            <form id="signup" method="post" action="/api/signup" autocomplete="on">
+              <label>Full name<input name="name" required placeholder="Officer name">
+              </label>
+              <label>Official email<input type="email" name="email" required placeholder="name@department.gov.in">
+              </label>
+              <label>Department / authority<input name="department" required placeholder="e.g. City Traffic Police">
+              </label>
+              <label>Registration code<input name="registration_code" placeholder="Only required when configured by administrator">
+              </label>
+              <label>Create password<span class="password-field"><input id="signupPassword" type="password" name="password" minlength="8" required placeholder="Minimum 8 characters"><button class="password-toggle" type="button" data-password-toggle="signupPassword" aria-label="Show password" aria-pressed="false" title="Show password"><svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3 21 21M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A11.1 11.1 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.8M6.6 6.6C3.7 8.5 2 12 2 12s3.6 7 10 7c1.3 0 2.5-.3 3.5-.8"/></svg></button></span>
+              </label>
+              <button class="primary-btn form-btn">Create officer account</button>
+            </form>
+            <p class="switch-copy">Already registered?
+              <button data-switch="login">Sign in</button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+      <script src="js/data.js?v=4"></script>
+      <script src="js/map.js?v=5"></script>
+      <script src="js/landing-map.js"></script>
+      <script src="js/backend.js?v=1"></script>
+      <script src="js/auth.js?v=4">
+      </script>
+    </body>
+  </html>

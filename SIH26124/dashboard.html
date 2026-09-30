@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UrbanEye — Fleet Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/dashboard.css?v=9">
+<link rel="stylesheet" href="css/map-controls.css?v=3">
+<link rel="stylesheet" href="css/branding.css?v=1">
+</head>
+<body class="dash">
+
+<div class="tricolor-strip"><span class="saffron"></span><span class="white"></span><span class="green"></span></div>
+<div class="dash-top">
+  <div class="brand"><img class="brand-logo dashboard-brand-logo" src="/assets/urbaneye.png" alt="">UrbanEye <span style="color:var(--text-faint);font-weight:400;font-size:13px;margin-left:6px;">Fleet Command</span></div>
+  <div class="dash-top-right">
+    <div class="dash-status"><span class="dot"></span>Prototype monitoring</div>
+    <div class="dash-status" id="dataSourceBadge" style="color:var(--text-faint)">Checking backend…</div>
+    <div class="dash-clock" id="dashClock">--:--:--</div>
+    <a class="dash-back" href="/">← Public portal</a>
+    <div id="officerArea"></div>
+  </div>
+</div>
+
+<div class="dash-body">
+  <aside class="sidebar">
+    <span class="sidebar-group-label">Monitor</span>
+    <button class="active" data-panel="panel-overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Overview
+    </button>
+    <button data-panel="panel-alerts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
+      Alerts
+    </button>
+    <button data-panel="panel-road">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20 10 4h4l6 16"/><path d="M9 14h6"/></svg>
+      Road health
+    </button>
+    <button data-panel="panel-analytics">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+      Traffic analytics
+    </button>
+    <span class="sidebar-group-label">Assets</span>
+    <button data-panel="panel-fleet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="7.5" cy="19" r="1.4"/><circle cx="16.5" cy="19" r="1.4"/></svg>
+      Fleet
+    </button>
+  </aside>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section class="panel active" id="panel-overview">
+      <div class="panel-head">
+        <div><h2>City overview</h2><p>Fleet telemetry refreshed every 15 seconds when edge devices are connected.</p></div>
+      </div>
+      <div class="panel-box" style="margin-bottom:16px;">
+        <div class="panel-box-head"><h3>Jurisdiction filter</h3><span class="legend" id="regionStatus">All regions</span></div>
+        <div class="region-row">
+          <select id="selState" aria-label="State or Union Territory"><option value="">State / UT</option></select>
+          <input id="selDistrict" list="districtOptions" placeholder="District" aria-label="District" disabled autocomplete="off">
+          <datalist id="districtOptions"></datalist>
+          <input id="selSubdistrict" list="subdistrictOptions" placeholder="Sub-district" aria-label="Sub-district" disabled autocomplete="off">
+          <datalist id="subdistrictOptions"></datalist>
+          <input id="selTaluk" list="talukOptions" placeholder="Taluk / Tehsil / Circle" aria-label="Taluk, Tehsil or Circle" disabled autocomplete="off">
+          <datalist id="talukOptions"></datalist>
+        </div>
+        <p class="region-note" id="regionNote">Place names are resolved with OpenStreetMap. Synthetic sample buses and alerts are seeded across all States/UTs; real coverage depends on bus GPS reports.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><span>Buses online</span><b id="statBusesOnline">–</b></div>
+        <div class="stat-card"><span>Alerts today</span><b class="warn" id="statAlerts">–</b></div>
+        <div class="stat-card"><span>Avg. detection confidence</span><b class="good" id="statConfidence">–</b></div>
+        <div class="stat-card"><span>Critical events</span><b class="alert" id="statCritical">–</b></div>
+      </div>
+      <div class="overview-grid">
+        <div class="panel-box">
+          <div class="panel-box-head">
+            <h3>Live map</h3>
+            <div class="legend">
+              <span><span class="dot" style="background:#0D67B5"></span>Bus</span>
+              <span><span class="dot" style="background:#E5484D"></span>Alert</span>
+            </div>
+          </div>
+          <div class="map-toggles">
+            <div class="toggle-chip on" data-layer="buses"><span class="sw"></span>Bus positions</div>
+            <div class="toggle-chip on" data-layer="alerts"><span class="sw"></span>Alerts</div>
+          </div>
+          <div id="map"></div>
+        </div>
+        <div class="panel-box">
+          <div class="panel-box-head"><h3>Recent alerts</h3></div>
+          <div class="alert-feed" id="alertFeedOverview"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="panel alerts-panel" id="panel-alerts">
+      <div class="panel-head">
+        <div><h2>Alerts</h2><p>Every event reported by the fleet, most recent first.</p></div>
+        <span class="alert-record-count" id="alertRecordCount">0 events</span>
+      </div>
+      <div class="alerts-severity-summary" id="alertsSeveritySummary" aria-label="Alert count by severity"></div>
+      <div class="alert-stream">
+        <div class="alert-feed" id="alertFeedFull"></div>
+      </div>
+    </section>
+
+    <!-- ROAD HEALTH -->
+    <section class="panel" id="panel-road">
+      <div class="panel-head">
+        <div><h2>Road health</h2><p>Defects detected on-route, ranked for maintenance planning.</p></div>
+      </div>
+      <div class="panel-box">
+        <table class="data-table">
+          <thead>
+            <tr><th>ID</th><th>Type</th><th>Route</th><th>Severity</th><th>Confidence</th><th>Status</th></tr>
+          </thead>
+          <tbody id="defectsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="panel" id="panel-analytics">
+      <div class="panel-head">
+        <div><h2>Traffic analytics</h2><p>Live analytics from the API across the fleet; choosing a jurisdiction switches alert charts to the matching records.</p></div>
+      </div>
+      <div class="chart-grid">
+        <div class="panel-box">
+          <div class="panel-box-head"><h3>Vehicles detected per hour</h3></div>
+          <div class="chart-box"><canvas id="chartDensity"></canvas></div>
+          <p class="chart-caption" id="densityChartSummary">Average vehicle detections per GPS heartbeat over the last 24 hours. This chart is fleet-wide.</p>
+        </div>
+        <div class="panel-box">
+          <div class="panel-box-head"><h3>Road defects by type (last 7 days)</h3></div>
+          <div class="chart-box"><canvas id="chartDefects"></canvas></div>
+          <p class="chart-caption" id="defectChartSummary"></p>
+        </div>
+        <div class="panel-box full">
+          <div class="panel-box-head"><h3>Traffic and incident events by route</h3></div>
+          <div class="chart-box"><canvas id="chartDelay"></canvas></div>
+          <p class="chart-caption" id="routeAlertChartSummary"></p>
+        </div>
+        <div class="panel-box full">
+          <div class="panel-box-head"><h3>Observed origin and destination points</h3><span class="legend" id="odMethod">Waiting for GPS samples</span></div>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Bus</th><th>Route</th><th>First point</th><th>Latest point</th><th>Samples</th></tr></thead><tbody id="odPairsBody"><tr><td colspan="5">Waiting for GPS samples.</td></tr></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLEET -->
+    <section class="panel" id="panel-fleet">
+      <div class="panel-head">
+        <div><h2>Fleet</h2><p>Onboard sensing status across the active fleet.</p></div>
+      </div>
+      <div class="fleet-grid" id="fleetGrid"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/backend.js?v=1"></script>
+<script src="js/api.js?v=4"></script>
+<script src="js/map.js?v=7"></script>
+<script src="js/charts.js?v=6"></script>
+<script src="js/regions.js?v=3"></script>
+<script src="js/app.js?v=8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+<script src="js/edge-live.js?v=2"></script>
+<script src="js/auth-guard.js"></script>
+</body>
+</html>
